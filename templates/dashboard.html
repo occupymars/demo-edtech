@@ -1,0 +1,144 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - LearnHub Demo{% endblock %}
+
+{% block content %}
+<div class="space-y-8">
+    <!-- Stats -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="bg-gray-900 border border-gray-800 rounded-xl p-4">
+            <p class="text-sm text-gray-400 mb-1">Total Learners</p>
+            <p class="text-2xl font-bold text-white">{{ stats.total_users }}</p>
+        </div>
+        <div class="bg-gray-900 border border-gray-800 rounded-xl p-4">
+            <p class="text-sm text-gray-400 mb-1">Active Learners</p>
+            <p class="text-2xl font-bold text-green-400">{{ stats.active_learners }}</p>
+        </div>
+        <div class="bg-gray-900 border border-gray-800 rounded-xl p-4">
+            <p class="text-sm text-gray-400 mb-1">Abandoned Courses</p>
+            <p class="text-2xl font-bold text-amber-400">{{ stats.abandoned }}</p>
+        </div>
+        <div class="bg-gray-900 border border-gray-800 rounded-xl p-4">
+            <p class="text-sm text-gray-400 mb-1">Certificates Earned</p>
+            <p class="text-2xl font-bold text-accent">{{ stats.total_certificates }}</p>
+        </div>
+    </div>
+
+    <!-- Event Triggers Info -->
+    <div class="bg-accent/10 border border-accent/30 rounded-xl p-4">
+        <h3 class="font-semibold text-accent mb-2">How to trigger events</h3>
+        <p class="text-sm text-gray-300">
+            Click on a learner below to view their details and trigger Fourbyfour events. Each event triggers an automated workflow:
+        </p>
+        <ul class="mt-2 text-sm text-gray-400 space-y-1">
+            <li><code class="text-accent">course.enrolled</code> → Welcome & onboarding workflow</li>
+            <li><code class="text-accent">course.abandoned</code> → Course re-engagement workflow</li>
+            <li><code class="text-accent">streak.broken</code> → Streak recovery workflow</li>
+            <li><code class="text-accent">certificate.earned</code> → Celebration & upsell workflow</li>
+        </ul>
+    </div>
+
+    <!-- Users Table -->
+    <div class="bg-gray-900 border border-gray-800 rounded-xl overflow-hidden">
+        <div class="px-4 py-3 border-b border-gray-800">
+            <h2 class="font-semibold text-white">Learners</h2>
+        </div>
+        {% if users %}
+        <div class="overflow-x-auto">
+            <table class="w-full">
+                <thead class="bg-gray-800/50">
+                    <tr>
+                        <th class="text-left px-4 py-3 text-xs font-medium text-gray-400 uppercase">Learner</th>
+                        <th class="text-left px-4 py-3 text-xs font-medium text-gray-400 uppercase">Email</th>
+                        <th class="text-left px-4 py-3 text-xs font-medium text-gray-400 uppercase">Streak</th>
+                        <th class="text-left px-4 py-3 text-xs font-medium text-gray-400 uppercase">Learning Style</th>
+                        <th class="text-left px-4 py-3 text-xs font-medium text-gray-400 uppercase">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-800">
+                    {% for user in users %}
+                    <tr class="hover:bg-gray-800/50 transition-colors">
+                        <td class="px-4 py-3">
+                            <div>
+                                <p class="font-medium text-white">{{ user.name }}</p>
+                                <p class="text-xs text-gray-500">{{ user.id }}</p>
+                            </div>
+                        </td>
+                        <td class="px-4 py-3 text-sm text-gray-300">{{ user.email }}</td>
+                        <td class="px-4 py-3">
+                            {% if user.streak_days > 0 %}
+                            <span class="px-2 py-1 text-xs rounded-full bg-accent/20 text-accent">{{ user.streak_days }} days</span>
+                            {% else %}
+                            <span class="px-2 py-1 text-xs rounded-full bg-gray-500/20 text-gray-400">No streak</span>
+                            {% endif %}
+                        </td>
+                        <td class="px-4 py-3 text-sm text-gray-300 capitalize">{{ user.learning_style }}</td>
+                        <td class="px-4 py-3">
+                            <a href="/users/{{ user.id }}" class="text-accent hover:underline text-sm">
+                                View & Trigger Events →
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="px-4 py-8 text-center text-gray-500">
+            <p>No learners yet. Run the seed script to create demo data.</p>
+            <code class="mt-2 block text-sm text-accent">python scripts/seed.py</code>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Courses Table -->
+    <div class="bg-gray-900 border border-gray-800 rounded-xl overflow-hidden">
+        <div class="px-4 py-3 border-b border-gray-800">
+            <h2 class="font-semibold text-white">Courses</h2>
+        </div>
+        {% if courses %}
+        <div class="overflow-x-auto">
+            <table class="w-full">
+                <thead class="bg-gray-800/50">
+                    <tr>
+                        <th class="text-left px-4 py-3 text-xs font-medium text-gray-400 uppercase">Course</th>
+                        <th class="text-left px-4 py-3 text-xs font-medium text-gray-400 uppercase">Category</th>
+                        <th class="text-left px-4 py-3 text-xs font-medium text-gray-400 uppercase">Duration</th>
+                        <th class="text-left px-4 py-3 text-xs font-medium text-gray-400 uppercase">Modules</th>
+                        <th class="text-left px-4 py-3 text-xs font-medium text-gray-400 uppercase">Difficulty</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-800">
+                    {% for course in courses %}
+                    <tr class="hover:bg-gray-800/50 transition-colors">
+                        <td class="px-4 py-3">
+                            <div>
+                                <p class="font-medium text-white">{{ course.name }}</p>
+                                <p class="text-xs text-gray-500">{{ course.id }}</p>
+                            </div>
+                        </td>
+                        <td class="px-4 py-3 text-sm text-gray-300 capitalize">{{ course.category }}</td>
+                        <td class="px-4 py-3 text-sm text-gray-300">{{ course.duration_hours }}h</td>
+                        <td class="px-4 py-3 text-sm text-gray-300">{{ course.modules }}</td>
+                        <td class="px-4 py-3">
+                            {% if course.difficulty == 'beginner' %}
+                            <span class="px-2 py-1 text-xs rounded-full bg-green-500/20 text-green-400">Beginner</span>
+                            {% elif course.difficulty == 'intermediate' %}
+                            <span class="px-2 py-1 text-xs rounded-full bg-amber-500/20 text-amber-400">Intermediate</span>
+                            {% else %}
+                            <span class="px-2 py-1 text-xs rounded-full bg-red-500/20 text-red-400">Advanced</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="px-4 py-8 text-center text-gray-500">
+            <p>No courses yet.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
