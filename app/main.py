@@ -9,6 +9,7 @@ from fastapi.templating import Jinja2Templates
 from app.config import config
 from app.models import db, User, Course, Enrollment, Certificate, EnrollmentStatus
 from app import fbf
+from app.widget import generate_widget_token
 
 app = FastAPI(
     title="LearnHub Demo",
@@ -80,6 +81,9 @@ async def user_detail(request: Request, user_id: str):
         "enrollments": enriched_enrollments,
         "certificates": user_certificates,
         "courses": list(db.courses.values()),
+        "widget_token": generate_widget_token(user_id),
+        "project_id": config.FOURBYFOUR_PROJECT_ID,
+        "api_base_url": config.FOURBYFOUR_BASE_URL,
     })
 
 

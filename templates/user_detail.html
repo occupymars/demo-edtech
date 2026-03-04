@@ -235,3 +235,24 @@
     </div>
 </div>
 {% endblock %}
+
+{% block widget %}
+{% if widget_token %}
+<script>
+  Fourbyfour.init({
+    projectId: '{{ project_id }}',
+    userId: '{{ user.id }}',
+    userToken: '{{ widget_token }}',
+    baseUrl: '{{ api_base_url }}',
+    theme: 'dark',
+    position: 'bottom-right',
+    onNotification: function(notification) {
+      console.log('New notification:', notification);
+    },
+    onError: function(error) {
+      console.error('Widget error:', error);
+    }
+  });
+</script>
+{% endif %}
+{% endblock %}
