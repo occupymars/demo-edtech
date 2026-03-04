@@ -22,6 +22,14 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
 
 
+# Auto-seed on startup if database is empty
+@app.on_event("startup")
+async def seed_on_startup():
+    if not db.users:
+        from app.seed import seed_database
+        seed_database()
+
+
 # ============================================================================
 # Pages
 # ============================================================================
@@ -278,6 +286,24 @@ async def trigger_level_completed(
 # ============================================================================
 # API Endpoints (for load testing)
 # ============================================================================
+
+@app.post("/api/events/course-enrolled")
+async def api_course_enrolled(
+    user_id: str,
+    course_id: str,
+    course_name: str,
+    category: str = "programming",
+):
+    """API endpoint for triggering course.enrolled event."""
+    result = await fbf.track_course_enrolled(
+        user_id=user_id,
+        course_id=course_id,
+        course_name=course_name,
+        category=category,
+    )
+
+    return {"status": "tracked", "event": "course.enrolled", "result": result}
+
 
 @app.post("/api/events/course-abandoned")
 async def api_course_abandoned(
